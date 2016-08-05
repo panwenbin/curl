@@ -1,0 +1,22 @@
+{
+    "name": "panwenbin/curl",
+    "description": "curl简单封装",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "keywords": ["curl"],
+    "authors": [
+        {
+            "name": "Pan Wenbin",
+            "email": "panwenbin@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "ext-curl": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "panwenbin\\helper\\": ""
+        }
+    }
+}
