@@ -8,6 +8,9 @@ namespace panwenbin\helper;
 
 class Curl
 {
+    private $responseHeader = '';
+    private $_responseHeaders = [];
+
     public static function to($url)
     {
         $curl = new Curl;
@@ -52,6 +55,43 @@ class Curl
         return $this;
     }
 
+    public function withHeader()
+    {
+        $this->setOption(CURLOPT_HEADER, true);
+        return $this;
+    }
+
+    public function withoutBody()
+    {
+        $this->setOption(CURLOPT_NOBODY, false);
+        return $this;
+    }
+
+    public function rawResponseHeader()
+    {
+        return $this->responseHeader;
+    }
+
+    public function responseHeaders($key = null)
+    {
+        if (empty($this->_responseHeaders)) {
+            $_headerLines = explode("\n", strtr($this->responseHeader, "\r", ""));
+            if (isset($_headerLines[0])) unset($_headerLines[0]);
+            foreach ($_headerLines as $headerLine) {
+                if (!trim($headerLine)) continue;
+                $exp = explode(':', $headerLine, 2);
+                list($headerKey, $headerValue) = $exp;
+                $headerKey = trim($headerKey);
+                $headerValue = trim($headerValue);
+                $this->_responseHeaders[$headerKey] = $headerValue;
+            }
+        }
+        if ($key) {
+            return isset($this->_responseHeaders[$key]) ? $this->_responseHeaders[$key] : null;
+        }
+        return $this->_responseHeaders;
+    }
+
     public function get()
     {
         $parameterString = '';
@@ -75,6 +115,11 @@ class Curl
         $ch = curl_init();
         curl_setopt_array($ch, $this->options);
         $html = curl_exec($ch);
+        if (isset($this->options[CURLOPT_HEADER]) && $this->options[CURLOPT_HEADER]) {
+            $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $this->responseHeader = substr($html, 0, $header_size);
+            $html = substr($html, $header_size);
+        }
         curl_close($ch);
         return $html;
     }
