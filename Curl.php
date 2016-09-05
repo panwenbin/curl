@@ -110,6 +110,13 @@ class Curl
         return $this->send();
     }
 
+    public function patch()
+    {
+        $this->setOption(CURLOPT_CUSTOMREQUEST, 'PATCH');
+        $this->setOption(CURLOPT_POSTFIELDS, http_build_query($this->data));
+        return $this->send();
+    }
+
     public function send()
     {
         $ch = curl_init();
