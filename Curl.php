@@ -31,6 +31,18 @@ class Curl
         $this->options[$option] = $value;
     }
 
+    public function withOption($option, $value)
+    {
+        $this->setOption($option, $value);
+        return $this;
+    }
+
+    public function noSslVerifyPeer()
+    {
+        $this->setOption(CURLOPT_SSL_VERIFYPEER, false);
+        return $this;
+    }
+
     public function toUrl($url)
     {
         $this->setOption(CURLOPT_URL, $url);
