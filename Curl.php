@@ -5,7 +5,6 @@
 
 namespace panwenbin\helper;
 
-
 class Curl
 {
     private $responseHeader = '';
@@ -13,16 +12,17 @@ class Curl
 
     public static function to($url)
     {
-        $curl = new Curl;
+        $curl = new self();
         $curl->toUrl($url);
+
         return $curl;
     }
 
     private $options = [
-        CURLOPT_HEADER => 0,
+        CURLOPT_HEADER         => 0,
         CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_TIMECONDITION => 10,
-        CURLOPT_TIMEOUT => 30,
+        CURLOPT_TIMECONDITION  => 10,
+        CURLOPT_TIMEOUT        => 30,
     ];
     private $data = [];
 
@@ -34,48 +34,56 @@ class Curl
     public function withOption($option, $value)
     {
         $this->setOption($option, $value);
+
         return $this;
     }
 
     public function noSslVerifyPeer()
     {
         $this->setOption(CURLOPT_SSL_VERIFYPEER, false);
+
         return $this;
     }
 
     public function toUrl($url)
     {
         $this->setOption(CURLOPT_URL, $url);
+
         return $this;
     }
 
     public function withCookie($cookie)
     {
         $this->setOption(CURLOPT_COOKIE, $cookie);
+
         return $this;
     }
 
     public function withCookieFile($file)
     {
         $this->setOption(CURLOPT_COOKIEFILE, $file);
+
         return $this;
     }
 
     public function withData($data)
     {
         $this->data = $data;
+
         return $this;
     }
 
     public function withHeader()
     {
         $this->setOption(CURLOPT_HEADER, true);
+
         return $this;
     }
 
     public function withoutBody()
     {
         $this->setOption(CURLOPT_NOBODY, false);
+
         return $this;
     }
 
@@ -87,10 +95,14 @@ class Curl
     public function responseHeaders($key = null)
     {
         if (empty($this->_responseHeaders)) {
-            $_headerLines = explode("\n", strtr($this->responseHeader, "\r", ""));
-            if (isset($_headerLines[0])) unset($_headerLines[0]);
+            $_headerLines = explode("\n", strtr($this->responseHeader, "\r", ''));
+            if (isset($_headerLines[0])) {
+                unset($_headerLines[0]);
+            }
             foreach ($_headerLines as $headerLine) {
-                if (!trim($headerLine)) continue;
+                if (!trim($headerLine)) {
+                    continue;
+                }
                 $exp = explode(':', $headerLine, 2);
                 list($headerKey, $headerValue) = $exp;
                 $headerKey = trim($headerKey);
@@ -101,6 +113,7 @@ class Curl
         if ($key) {
             return isset($this->_responseHeaders[$key]) ? $this->_responseHeaders[$key] : null;
         }
+
         return $this->_responseHeaders;
     }
 
@@ -112,6 +125,7 @@ class Curl
             $parameterString .= http_build_query($this->data);
         }
         $this->options[CURLOPT_URL] .= $parameterString;
+
         return $this->send();
     }
 
@@ -119,6 +133,7 @@ class Curl
     {
         $this->setOption(CURLOPT_POST, 1);
         $this->setOption(CURLOPT_POSTFIELDS, $this->data);
+
         return $this->send();
     }
 
@@ -126,6 +141,7 @@ class Curl
     {
         $this->setOption(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setOption(CURLOPT_POSTFIELDS, http_build_query($this->data));
+
         return $this->send();
     }
 
@@ -140,6 +156,7 @@ class Curl
             $html = substr($html, $header_size);
         }
         curl_close($ch);
+
         return $html;
     }
 }
