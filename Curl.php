@@ -21,7 +21,6 @@ class Curl
     private $options = [
         CURLOPT_HEADER         => 0,
         CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_TIMECONDITION  => 10,
         CURLOPT_TIMEOUT        => 30,
     ];
     private $data = [];
