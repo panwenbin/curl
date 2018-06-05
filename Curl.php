@@ -9,6 +9,7 @@ class Curl
 {
     private $responseHeader = '';
     private $_responseHeaders = [];
+    private $responseBody = '';
 
     public static function to($url)
     {
@@ -19,8 +20,8 @@ class Curl
     }
 
     private $options = [
-        CURLOPT_HEADER         => 0,
-        CURLOPT_RETURNTRANSFER => 1,
+        CURLOPT_HEADER         => false,
+        CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT        => 30,
     ];
     private $data = [];
@@ -148,14 +149,14 @@ class Curl
     {
         $ch = curl_init();
         curl_setopt_array($ch, $this->options);
-        $html = curl_exec($ch);
+        $this->responseBody = curl_exec($ch);
         if (isset($this->options[CURLOPT_HEADER]) && $this->options[CURLOPT_HEADER]) {
             $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-            $this->responseHeader = substr($html, 0, $header_size);
-            $html = substr($html, $header_size);
+            $this->responseHeader = substr($this->responseBody, 0, $header_size);
+            $this->responseBody = substr($this->responseBody, $header_size);
         }
         curl_close($ch);
 
-        return $html;
+        return $this->responseBody;
     }
 }
