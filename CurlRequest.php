@@ -15,6 +15,8 @@ class CurlRequest
     ];
     private $data = [];
 
+    private $ch;
+
     public function setOption($option, $value)
     {
         $this->options[$option] = $value;
@@ -159,20 +161,31 @@ class CurlRequest
     public function send()
     {
         $this->beforeSend();
-        $ch = curl_init();
-        curl_setopt_array($ch, $this->options);
+        if (is_null($this->ch)) {
+            $this->ch = curl_init();
+        } else {
+            curl_reset($this->ch);
+        }
+        curl_setopt_array($this->ch, $this->options);
         $res = new CurlResponse();
-        $res->body = curl_exec($ch);
-        $res->code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $res->body = curl_exec($this->ch);
+        $res->code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
         if (!empty($this->options[CURLOPT_HEADER])) {
-            $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
             $res->header = substr($res->body, 0, $header_size);
             $res->body = substr($res->body, $header_size);
         }
-        curl_close($ch);
         $this->afterSend();
 
         return $res;
+    }
+
+    public function close()
+    {
+        if ($this->ch) {
+            curl_close($this->ch);
+            $this->ch = null;
+        }
     }
 
     protected function beforeSend()
