@@ -1,5 +1,5 @@
 # curl
-> curl简单封装，暂时主要为了方便的GET/POST，代替file_get_contents
+> curl简单封装，暂时主要为了方便的GET/POST/PATCH/HEAD/OPTIONS/DELETE，代替file_get_contents
 
 # 简单使用示例
 ```
