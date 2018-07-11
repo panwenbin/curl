@@ -10,6 +10,8 @@ $res = Curl::to('http://www.example.com/')->withData(['username' => 'panwenbin',
 $res = Curl::to('http://www.example.com/source/1')->withData(['minPriceYuan' => 123])->patch();
 $res = Curl::to('http://www.example.com/')->withData(['product_id' => '123'])->get();
 $res = Curl::to('http://www.example.com/profile')->withCookieFile('cookiejar.txt')->get();
+$imageFile = new \CURLFile($filename);
+$res = Curl::to($uploadUrl)->withData(['media' => $imageFile])->withOption(CURLOPT_TIMEOUT, 180)->post();
 if ($res->code == 200) {
     $html = $res->body;
 }
