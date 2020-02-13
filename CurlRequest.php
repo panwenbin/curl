@@ -11,8 +11,10 @@ class CurlRequest
     private $options = [
         CURLOPT_HEADER => false,
         CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [],
         CURLOPT_TIMEOUT => 30,
     ];
+    private $headers = [];
     private $data = [];
 
     private $ch;
@@ -64,6 +66,20 @@ class CurlRequest
         return $this;
     }
 
+    public function withHeaders(array $headers)
+    {
+        $this->headers = $headers;
+
+        return $this;
+    }
+
+    public function withHeader($key, $value)
+    {
+        $this->headers[$key] = $value;
+
+        return $this;
+    }
+
     public function returnHeader()
     {
         $this->setOption(CURLOPT_HEADER, true);
@@ -86,6 +102,14 @@ class CurlRequest
             $parameterString .= http_build_query($this->data);
         }
         $this->options[CURLOPT_URL] .= $parameterString;
+
+        if (is_array($this->headers) && count($this->headers)) {
+            $headersArray = [];
+            foreach ($this->headers as $key => $value) {
+                $headersArray[] = "{$key}: {$value}";
+            }
+            $this->options[CURLOPT_HTTPHEADER] = $headersArray;
+        }
     }
 
     /**
